@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* Import Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+        /* Basic Reset and Body Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #232323;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        /* Main Container Styling */
+        .container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            /* This box-shadow creates the glowing red border effect from the video */
+            box-shadow: 0 0 25px 5px rgba(220, 68, 55, 0.6);
+            position: relative;
+            overflow: hidden; /* This is crucial for the sliding animation */
+            width: 900px;
+            max-width: 100%;
+            min-height: 550px;
+        }
+
+        /* General Form Container Styling */
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+        
+        /* Positioning for the Sign In and Sign Up Forms */
+        .sign-in-container {
+            left: 0;
+            width: 50%;
+            z-index: 2;
+        }
+
+        .sign-up-container {
+            left: 0;
+            width: 50%;
+            opacity: 0; /* Hidden by default */
+            z-index: 1;
+        }
+        
+        /* Shared Form Element Styling */
+        form {
+            background-color: #1e1e1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 50px;
+            height: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+
+        /* Input Field Styling */
+        .input-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .input-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        
+        input {
+            background-color: transparent;
+            color: #fff;
+            border: none;
+            border-bottom: 2px solid #555;
+            padding: 14px 15px 14px 40px; /* Padding left for icon */
+            width: 100%;
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-bottom-color: #dc4437; /* Highlight color on focus */
+        }
+        
+        /* Button Styling */
+        button {
+            border-radius: 25px;
+            border: 1px solid #dc4437;
+            background-color: #dc4437;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 80ms ease-in, background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        button:hover {
+             background-color: #e45a4d;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Ghost button style for the overlay panel */
+        button.ghost {
+            background-color: transparent;
+            border-color: #FFFFFF;
+        }
+
+        /* Text & Link Styling */
+        p {
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            color: #eee;
+        }
+
+        .switch-text {
+            margin-top: 25px;
+            color: #aaa;
+        }
+
+        .switch-text a {
+            color: #dc4437;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Overlay Styling (The sliding red panels) */
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        .overlay {
+            background: linear-gradient(to right, #e45a4d, #dc4437);
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+        
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-left {
+            transform: translateX(-20%);
+        }
+
+        .overlay-right {
+            right: 0;
+            transform: translateX(0);
+        }
+        
+        /* --- ANIMATION --- */
+        /* This is where the magic happens. The .right-panel-active class is added by JavaScript on click. */
+        
+        /* Move the sign-in form to the left */
+        .container.right-panel-active .sign-in-container {
+            transform: translateX(100%);
+        }
+
+        /* Move the overlay to the left */
+        .container.right-panel-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        /* Bring the sign-up form from the right */
+        .container.right-panel-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: show 0.6s;
+        }
+
+        /* Keyframe animation for the form appearing */
+        @keyframes show {
+            0%, 49.99% {
+                opacity: 0;
+                z-index: 1;
+            }
+            50%, 100% {
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+
+        /* Animate the gradient overlay */
+        .container.right-panel-active .overlay {
+            transform: translateX(50%);
+        }
+
+        .container.right-panel-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        .container.right-panel-active .overlay-right {
+            transform: translateX(20%);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form action="#">
+                <h1>Register</h1>
+                <div class="input-container">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" placeholder="Username" />
+                </div>
+                <div class="input-container">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" placeholder="Email" />
+                </div>
+                <div class="input-container">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" placeholder="Password" />
+                </div>
+                <button>Register</button>
+                <p class="switch-text">Don't have an account? <a id="signInLink">Sign In</a></p>
+            </form>
+        </div>
+
+        <div class="form-container sign-in-container">
+            <form action="#">
+                <h1>Login</h1>
+                 <div class="input-container">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" placeholder="Username" />
+                </div>
+                <div class="input-container">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" placeholder="Password" />
+                </div>
+                <button>Login</button>
+                <p class="switch-text">Don't have an account? <a id="signUpLink">Sign Up</a></p>
+            </form>
+        </div>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>WELCOME!</h1>
+                    <p>We're delighted to have you here. If you need any assistance, feel free to reach out.</p>
+                    <button class="ghost" id="signInButton">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>WELCOME BACK!</h1>
+                    <p>We are happy to have you with us again. If you need anything, we are here to help.</p>
+                    <button class="ghost" id="signUpButton">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const signUpButton = document.getElementById('signUpButton');
+        const signInButton = document.getElementById('signInButton');
+        const signUpLink = document.getElementById('signUpLink');
+        const signInLink = document.getElementById('signInLink');
+        const container = document.getElementById('container');
+
+        // Listener for the "Sign Up" button in the overlay
+        signUpButton.addEventListener('click', () => {
+            container.classList.add('right-panel-active');
+        });
+
+        // Listener for the "Sign In" button in the overlay
+        signInButton.addEventListener('click', () => {
+            container.classList.remove('right-panel-active');
+        });
+
+        // Listener for the "Sign Up" link in the form
+        signUpLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            container.classList.add('right-panel-active');
+        });
+
+        // Listener for the "Sign In" link in the form
+        signInLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            container.classList.remove('right-panel-active');
+        });
+
+    </script>
+</body>
+</html>
